@@ -10,18 +10,14 @@ using Assets.Scripts.Objects;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.Util;
 using HarmonyLib;
-using StationeersMods.Interface;
 using UnityEngine;
 
 namespace SaveRecovery
 {
-  [StationeersMod("SaveRecovery", "SaveRecovery", "0.1.1")]
-  class SaveRecovery : ModBehaviour
+  class SaveRecovery : MonoBehaviour
   {
-    public override void OnLoaded(ContentHandler contentHandler)
+    public void OnLoaded(List<GameObject> prefabs)
     {
-      base.OnLoaded(contentHandler);
-
       var harmony = new Harmony("SaveRecovery");
       harmony.PatchAll();
     }
@@ -42,7 +38,7 @@ namespace SaveRecovery
       // search the save file for any missing savedata types
       var fname = XmlSaveLoad.Instance.CurrentWorldSave.World.FullName;
       using (var streamReader = new StreamReader(fname, Encoding.GetEncoding("UTF-8")))
-      using (var reader = XmlReader.Create(streamReader))
+      using (var reader = XmlReader.Create(streamReader, new() { CheckCharacters = false }))
       {
         while (reader.Read())
         {
