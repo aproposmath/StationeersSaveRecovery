@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetadata xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>Save Recovery</Name>
+  <ModID>unlucky.saverecovery</ModID>
   <Author>tom_is_unlucky</Author>
-  <Version>0.1.2</Version>
+  <Version>0.1.3</Version>
   <Description>[h1]Save Recovery[/h1]
 Allows your saves to load if they contain things that were in a removed mod.
 [h2][b]Warning: The items from removed mods will still be removed from your game, it just won't crash when loading.[/b][/h2]
@@ -12,14 +13,10 @@ Allows your saves to load if they contain things that were in a removed mod.
 This requires BepInEx and [url=https://github.com/StationeersLaunchPad/StationeersLaunchPad]StationeersLaunchPad[/url].
   </Description>
   <ChangeLog>
-    [h3]Version 0.1.2:[/h3]
+    [h3]Version 0.1.3:[/h3]
     [list]
-    [*]Fix load failure when save contains disallowed xml character entities
+    [*]Fix load failure on blueprint mod motherboard
     [/list]
   </ChangeLog>
-  <Tags></Tags>
-  <Dependencies />
-  <LoadBefore />
-  <LoadAfter />
   <WorkshopHandle>3480696797</WorkshopHandle>
 </ModMetadata>
