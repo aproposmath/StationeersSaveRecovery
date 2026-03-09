@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.Util;
@@ -31,7 +32,7 @@ namespace SaveRecovery
     {
       var existingTypes = new HashSet<string>();
       foreach (var type in XmlSaveLoad.ExtraTypes)
-        existingTypes.Add(type.Name);
+        IndexExtraType(type, existingTypes);
 
       var missingTypes = new HashSet<string>();
 
@@ -54,6 +55,17 @@ namespace SaveRecovery
       AddExtraTypes(missingTypes);
 
       _failedThings.Clear();
+    }
+
+    private static void IndexExtraType(Type type, HashSet<string> existingTypes)
+    {
+      if (type is null)
+        return;
+      if (!existingTypes.Add(type.Name))
+        return;
+      var attrs = type.GetCustomAttributes<XmlIncludeAttribute>();
+      foreach (var attr in attrs)
+        IndexExtraType(attr.Type, existingTypes);
     }
 
     private static int _assemblyIndex = 0;
