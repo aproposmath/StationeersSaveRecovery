@@ -92,20 +92,48 @@ namespace SaveRecovery
     }
 
     private static HashSet<long> _failedThings = new();
-    [HarmonyPatch("LoadThing"), HarmonyPrefix]
-    static void LoadThingPrefix(ThingSaveData thingData)
+    [HarmonyPatch(nameof(XmlSaveLoad.Load), new[] { typeof(ThingSaveData), typeof(bool) })]
+    public static void LoadThingPrefix(ThingSaveData thingData)
     {
       // If the parent failed to load, drop this in the world
       if (thingData is DynamicThingSaveData dynamicData && _failedThings.Contains(dynamicData.ParentReferenceId))
         dynamicData.ParentReferenceId = 0;
     }
 
-    [HarmonyPatch("LoadThing"), HarmonyPostfix]
-    static void LoadThingPostfix(ThingSaveData thingData, ref Thing __result)
+    [HarmonyPatch(nameof(XmlSaveLoad.Load), new[] { typeof(ThingSaveData), typeof(bool) })]
+    public static void LoadThingPostfix(ThingSaveData thingData, ref Thing __result)
     {
       // If this thing didn't load for whatever reason, save its ID so any children aren't waiting for it
       if (__result == null)
         _failedThings.Add(thingData.ReferenceId);
+    }
+}
+
+
+  [HarmonyPatch]
+  static class XmlSaveLoadPatchGenericLoad
+  {
+    static MethodBase TargetMethod()
+    {
+        var genericLoad = typeof(XmlSaveLoad)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(m =>
+                m.Name == "Load" &&
+                m.IsGenericMethodDefinition);
+
+        return genericLoad.MakeGenericMethod(typeof(DynamicThing));
+    }
+
+    static void Prefix(ThingSaveData thingData)
+    {
+        XmlSaveLoadPatch.LoadThingPrefix(thingData);
+    }
+
+    static void Postfix(ThingSaveData thingData, ref DynamicThing __result)
+    {
+        var thing = __result as Thing;
+        XmlSaveLoadPatch.LoadThingPostfix(thingData, ref thing);
+        __result = thing as DynamicThing;
     }
   }
 }
